@@ -48,6 +48,15 @@ Projenin veritabanı şeması, PostgreSQL üzerinde Sequelize ORM kullanılarak 
     *   `file_content`: Dosyanın ikili (binary) hali (`BYTEA`). Disk kullanımı yerine veritabanında güvenli saklama.
     *   `status`: İşlem durumu (PENDING, PROCESSING, COMPLETED, FAILED).
 
+### 6. `06-create-system-logs.js` (Sistem Logları)
+*   **Tablo:** `SystemLogs`
+*   **Amaç:** Uygulamanın request/response trafiklerini ve hataları veritabanında saklar.
+*   **Kritik Alanlar:**
+    *   `level`: Log seviyesi (INFO, ERROR).
+    *   `message`: Log mesajı.
+    *   `traceId`: İşlemin izlenebilirliği için ID (İndekslenmiştir).
+    *   `meta`: Ekstra veriler (JSONB) - Req/Res detayları, Stack Trace.
+
 ## Veritabanı Şema Değişiklik Stratejisi
 *   Tüm değişiklikler `sequelize-cli` ile oluşturulan **timestamp** veya **sıralı (01, 02...)** migration dosyalarıyla yapılır.
 *   Geri alma (Rollback) senaryoları (`down` metodu) her migration için tanımlanmıştır.

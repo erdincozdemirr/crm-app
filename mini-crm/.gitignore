@@ -3,4 +3,5 @@ node_modules/
 logs/
 .DS_Store
 coverage/
+tests/reports/
 config/config.json

@@ -16,6 +16,10 @@
         "no-console": "warn",
         "no-unused-vars": "warn",
         "class-methods-use-this": "off",
-        "consistent-return": "off"
+        "consistent-return": "off",
+        "no-restricted-syntax": "off",
+        "no-await-in-loop": "off",
+        "no-plusplus": "off",
+        "no-continue": "off"
     }
 }

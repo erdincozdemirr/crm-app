@@ -43,9 +43,13 @@ Eğer kendi PostgreSQL sunucunuzu kullanacaksanız:
 3.  `npm run migrate` komutunu çalıştırın.
 4.  `npm run dev` ile geliştirme modunda başlatın.
 
-## Veri Aktarımı (ETL)
+- **[Kullanıcı Kılavuzu (User Manual)](docs/User_Manual.md)**
+- **[Gereksinim Analizi](docs/Gereksinim_Analizi.txt)**
+- **[Mimari Tasarım](docs/Mimari_Tasarim_Dokumani.txt)**
+- **[Kod Haritası](docs/Codebase_Map.md)**
+- **[Log Örnekleri](docs/Log_Samples.md)**
+- **[Katkı Rehberi](docs/CONTRIBUTING.md)**
 
-Eski Excel/CSV verilerini sisteme aktarmak için:
 
 ```bash
 # mock_customers.csv dosyasındaki verileri yükler
@@ -60,10 +64,11 @@ Proje Unit ve Entegrasyon testlerini içerir.
 npm test
 ```
 
-## API Dokümantasyonu
+## Dokümantasyon
 
-API uçlarının detaylı tanımı `docs/openapi.yaml` dosyasında yer almaktadır.
-Özet Endpointler:
+- **[Kullanıcı Kılavuzu (User Manual)](docs/User_Manual.md):** Sistemin nasıl kullanılacağını anlatan detaylı rehber.
+- **API Dokümantasyonu:** `docs/openapi.yaml` veya `/api-docs` (Swagger UI).
+
 
 - `POST /api/customers`: Müşteri oluştur
 - `GET /api/customers`: Müşterileri listele

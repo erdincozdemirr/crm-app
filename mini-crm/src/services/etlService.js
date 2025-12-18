@@ -10,13 +10,13 @@ const logError = (msg) => logger.error(`[ETL ERROR] ${msg}`);
 
 async function normalizePhone(phone) {
     if (!phone) return null;
-    let cleaned = phone.replace(/\D/g, '');
+    const cleaned = phone.replace(/\D/g, '');
 
     if (cleaned.length === 10) {
         return `+90${cleaned}`;
-    } else if (cleaned.length === 11 && cleaned.startsWith('0')) {
+    } if (cleaned.length === 11 && cleaned.startsWith('0')) {
         return `+90${cleaned.substring(1)}`;
-    } else if (cleaned.length === 12 && cleaned.startsWith('90')) {
+    } if (cleaned.length === 12 && cleaned.startsWith('90')) {
         return `+${cleaned}`;
     }
 
@@ -39,7 +39,7 @@ class EtlService {
             // Save to DB first
             try {
                 etlRecord = await EtlImport.create({
-                    filename: filename,
+                    filename,
                     fileContent: fileBuffer,
                     status: 'PROCESSING'
                 });
@@ -73,10 +73,10 @@ class EtlService {
         for (const row of records) {
             try {
                 const rawName = cleanString(row['Ad Soyad']);
-                const rawPhone = row['Telefon'];
-                const rawEmail = cleanString(row['Email']);
-                const address = cleanString(row['Adres']);
-                const notes = cleanString(row['Not']);
+                const rawPhone = row.Telefon;
+                const rawEmail = cleanString(row.Email);
+                const address = cleanString(row.Adres);
+                const notes = cleanString(row.Not);
 
                 let firstName = rawName;
                 let lastName = null;
@@ -122,7 +122,7 @@ class EtlService {
             await etlRecord.update({
                 status: 'COMPLETED',
                 processedCount: successCount,
-                errorCount: errorCount
+                errorCount
             });
         }
 

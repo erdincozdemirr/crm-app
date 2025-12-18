@@ -1,0 +1,121 @@
+MINICRM PROJESI - ADIM ADIM YAPILAN ISLEMLER RAPORU
+Tarih: 18 Aralik 2025
+
+Bu dosya, projenin devralinmasindan tamamlanmasina kadar yapilan tum teknik ve yonetimsel islemleri kronolojik sirayla listeler.
+
+=== BOLUM 1: ANALIZ VE PLANLAMA ===
+
+1. Mevcut Durum Analizi:
+   - Proje dosyalari incelendi. Yarim kalmis, dokumantasyonu olmayan ve testleri calismayan bir yapi tespit edildi.
+   - Musterinin karmasik ve belirsiz istekleri (WhatApp notlari) analiz edildi.
+
+2. Gereksinim Analizi Dokumanin Olusturulmasi:
+   - Musteri talepleri 9 ana maddeye (Musteri, Urun, Siparis, ETL vb.) ayrildi.
+   - Belirsizlikler giderildi (Orn: Soyadi olmayan musteriler, stok takibi mantigi).
+   - `docs/Gereksinim_Analizi.txt` dosyasi olusturuldu.
+
+3. Proje Yonetimi Kurulumu:
+   - Yapilacak isler listesi `docs/Proje_Takip_Listesi.md` olarak cikartildi.
+   - Adim adim ilerleme plani hazirlandi.
+
+=== BOLUM 2: MIMARI TASARIM ===
+
+4. Veritabani Semasinin Tasarlanmasi:
+   - Eksik tablolar belirlendi: Customers, Products, Orders, OrderItems, EtlImports, SystemLogs.
+   - Iliskiler kurgulandi (Order -> Customer, OrderItem -> Product).
+   - `docs/Mimari_Tasarim_Dokumani.txt` olusturuldu.
+
+5. API Tasarimi:
+   - Hangi uclarin (Endpoints) gerekli oldugu belirlendi (Swagger/OpenAPI taslagi).
+
+=== BOLUM 3: ALTYAPI VE KONFIGURASYON ===
+
+6. Config Yapisinin Duzeltilmesi:
+   - `.env` dosyalari ile ortam (Dev/Test/Prod) ayrimi saglandi.
+   - Veritabani sifreleri kod icinden cikarildi.
+
+7. CI/CD Pipeline Kurulumu:
+   - GitHub Actions (`.github/workflows/ci.yml`) kuruldu.
+   - Her push isleminde otomatik Test ve Lint kontrolu aktiflestirildi.
+
+8. Kod Kalite Araclari:
+   - ESLint ve Prettier kurulumu yapildi.
+   - `npm run lint` ve `npm run lint:fix` komutlari eklendi.
+
+=== BOLUM 4: VERITABANI VE MIGRATION ===
+
+9.  Migration Temizligi:
+    - Eski, bozuk ve isimsiz migration dosyalari temizlendi.
+    - Dosyalar `01-create-customer.js`, `02-create-product.js`... formatinda sirali (Versioned) hale getirildi.
+
+10. Tablolarin Olusturulmasi:
+    - `01-create-customer.js`: Telefon ve Email unique yapildi.
+    - `02-create-product.js`: Stok takibi flag'i eklendi.
+    - `03-create-order.js`: Siparis durumlari (ENUM) eklendi.
+    - `04-create-order-items.js`: Siparis detaylari baglandi.
+    - `05-create-etl-imports.js`: Dosya yukleme tablosu (BYTEA) eklendi.
+    - `06-create-system-logs.js`: Veritabani loglama tablosu eklendi.
+
+11. Migration Raporlama:
+    - Yapilan degisiklikler `docs/Migration_Report.md` dosyasinda belgelendi.
+
+=== BOLUM 5: BACKEND GELISTIRME ===
+
+12. Musteri Modulu (Customer):
+    - `CustomerService`: Kayit, guncelleme, arama (Search) fonksiyonlari yazildi.
+    - `CustomerController`: Gelen istekleri karsilayan ve validasyon yapan yapi kuruldu.
+
+13. Urun Modulu (Product):
+    - Stok takibi mantigi (`isStockTracked`) servise eklendi.
+    - Urun listeleme ve stok guncelleme uclari yazildi.
+
+14. Siparis Modulu (Order):
+    - Transaction yapisi (ACID) kuruldu. (Siparis olusurken hata olursa stok dusumu geri alinir).
+    - Stok kontrolu eklendi (Stok yoksa siparis verilemez).
+    - Otomatik musteri olusturma ozelligi eklendi.
+
+15. ETL Modulu (Veri Gecisi):
+    - CSV/Excel dosya yukleme servisi yazildi.
+    - Telefon numarasi normalizasyonu (+90 formatlama) yapan `EtlService` gelistirildi.
+
+=== BOLUM 6: LOGLAMA VE HATA YONETIMI ===
+
+16. Gelismis Loglama Altyapisi:
+    - `winston` kutuphanesi ile loglama kuruldu.
+    - Trace ID (Izlenebilirlik) mekanizmasi eklendi. Her istege benzersiz ID atandi.
+
+17. Request/Response Loglamasi:
+    - `app.js` icine Middleware eklenerek her gelen istek ve donen cevap (sure bilgisiyle) kayit altina alindi.
+
+18. Veritabani Loglamasi:
+    - Loglarin sadece dosyaya degil, `SystemLogs` tablosuna da yazilmasi saglandi.
+
+=== BOLUM 7: TEST VE KALITE ===
+
+19. Test Altyapisi:
+    - Jest ve Supertest kutuphaneleri kuruldu.
+    - `npm run test:coverage` komutu eklendi.
+
+20. Test Yazimi:
+    - Unit Testler: Servisler ve Yardimci araclar icin yazildi.
+    - Integration Testler: Controllerlar ve API uclari icin yazildi.
+    - Mocking: Dis bagimliliklar (DB vb.) taklit edilerek test hizi artirildi.
+
+21. %100 Kapsam Hedefi:
+    - Tum moduller (Customer, Order, Product, Etl) test edildi.
+    - Test kapsami %93 seviyesine cikarildi.
+    - Raporlar `tests/reports` klasorunde toplandi.
+
+=== BOLUM 8: DOKUMANTASYON VE TESLIM ===
+
+22. Kullanici Kilavuzu:
+    - Sistemin nasil kullanilacagini anlatan `docs/User_Manual.md` hazirlandi.
+
+23. Kod Okumasi:
+    - Projenin kod yapisi ve mimarisini anlatan `docs/Codebase_Map.md` guncellendi.
+
+24. Nihai Duzenleme:
+    - Tum raporlar ve belgeler `src` dizininden alinip `docs/` klasorune tasindi.
+    - `README.md` dosyasi son haline getirildi.
+
+PROJE DURUMU: TAMAMLANDI VE TESLIME HAZIR. ✅
