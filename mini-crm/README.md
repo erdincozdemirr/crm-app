@@ -1,14 +1,79 @@
-# MiniCRM (Yarım Kalmış Proje)
+# MiniCRM
 
-Bu proje, küçük bir e-ticaret firmasının müşteri ve sipariş yönetimi için başlanmış **ama tamamlanmamış** bir MiniCRM sistemidir.
+MiniCRM, müşteri ilişkilerini yönetmek, ürün ve stok takibi yapmak ve sipariş süreçlerini dijitalleştirmek için geliştirilmiş Node.js tabanlı bir REST API projesidir.
 
-## Durum
+## Özellikler
 
-> Proje yaklaşık %40 civarında tamamlanmıştır.  
-> API uçları, testler, loglama ve migration yapısı **tamamlanmamıştır**.
+- **Müşteri Yönetimi:** Müşteri ekleme, listeleme ve güncelleme. (Telefon/Email tekilleştirme destekli)
+- **Ürün & Stok:** Stok takibi olan ve olmayan ürün yönetimi.
+- **Sipariş Yönetimi:** Stok kontrollü ve transactional sipariş oluşturma.
+- **ETL (Veri Aktarımı):** Excel/CSV'den toplu veri aktarımı.
+- **Güvenlik & Loglama:** Winston loglama, Global Error Handler.
 
-## Kurulum (eksik)
+## Kurulum ve Çalıştırma
+
+### Gereksinimler
+- Node.js (v18+)
+- PostgreSQL (veya Docker)
+
+### 1. Kurulum (Docker ile Kolay Kurulum)
+
+En hızlı yöntem Docker kullanmaktır. Veritabanı otomatik kurulur.
 
 ```bash
+# Bağımlılıkları yükle
 npm install
-npm run dev
+
+# Veritabanını başlat
+docker compose up -d
+
+# Veritabanı tablolarını oluştur (Migration)
+npm run migrate
+
+# Uygulamayı başlat
+npm run start
+```
+
+### 2. Manuel Kurulum (.env Ayarları)
+
+Eğer kendi PostgreSQL sunucunuzu kullanacaksanız:
+
+1.  `.env.example` dosyasını `.env` olarak kopyalayın.
+2.  `DB_HOST`, `DB_USER`, `DB_PASS` bilgilerini güncelleyin.
+3.  `npm run migrate` komutunu çalıştırın.
+4.  `npm run dev` ile geliştirme modunda başlatın.
+
+## Veri Aktarımı (ETL)
+
+Eski Excel/CSV verilerini sisteme aktarmak için:
+
+```bash
+# mock_customers.csv dosyasındaki verileri yükler
+node src/scripts/etl.js
+```
+
+## Testler
+
+Proje Unit ve Entegrasyon testlerini içerir.
+
+```bash
+npm test
+```
+
+## API Dokümantasyonu
+
+API uçlarının detaylı tanımı `docs/openapi.yaml` dosyasında yer almaktadır.
+Özet Endpointler:
+
+- `POST /api/customers`: Müşteri oluştur
+- `GET /api/customers`: Müşterileri listele
+- `POST /api/orders`: Sipariş oluştur
+- `POST /api/products`: Ürün ekle
+
+## Klasör Yapısı
+
+- `src/controllers`: İstek karşılama katmanı
+- `src/services`: İş mantığı ve veritabanı işlemleri
+- `src/models`: Sequelize veritabanı modelleri
+- `src/routes`: API rotaları
+- `src/lib`: Yardımcı araçlar (Logger vb.)

@@ -1,0 +1,73 @@
+GEREKSINIM ANALIZI VE TEKNIK COZUMLER
+PROJE: MiniCRM
+TARIH: 18 Aralik 2025
+
+1. GIRIS
+Bu dokuman, yarim kalmis MiniCRM projesinin tamamlanmasi surecinde musteriden gelen belirsiz taleplerin analizini ve teknik cozumlerini icerir. Asagidaki 9 madde, hem toplanan gereksinimleri hem de sistemin nasil calisacagini tanimlar.
+
+2. TALEPLER VE COZUMLER
+
+2.1. MUSTERI YONETIMI
+- Talep: "Bazi musterilerin soyadi yok." / "Ayni musteri iki kere eklenmesin." / "Adres kargo icin gerekli ama zorunlu olmasin."
+- Analiz ve Cozum:
+  * Veri Modeli: `firstName` zorunlu, `lastName` opsiyonel (nullable) yapilmistir.
+  * Tekillestirme: Telefon numarasi (Unique Key) ana ayirt edicidir. Ayni telefonla tekrar kayit denenirse sistem mevcut kaydi gunceller (Upsert).
+  * Adres: Musteri kaydinda adres opsiyoneldir, ancak siparis olusturulurken teslimat adresi zorunludur.
+
+2.2. URUN VE STOK YONETIMI
+- Talep: "Bazi urunlerin stok takibi yapilmiyor." / "Fiyatlar karisik olabilir."
+- Analiz ve Cozum:
+  * Stok Takibi: `isStockTracked` (Boolean) alani eklendi. `false` secilen urunlerde (hizmet vb.) stok kontrolu yapilmaz, eksiye dusmez.
+  * Fiyatlandirma: MVP kapsaminda her urunun tek bir guncel `unitPrice` (Birim Satis Fiyati) degeri vardir.
+
+2.3. SIPARIS YONETIMI
+- Talep: "Musteri sistemde yoksa da siparis verebilsin." / "Stok yoksa ne yapalim?" / "Siparis durumlari."
+- Analiz ve Cozum:
+  * Hizli Musteri: Kayitsiz musteri siparis verirse, arka planda girilen bilgilerle otomatik musteri kaydi olusturulur.
+  * Stok Kontrolu: Stok takipli urunlerde bakiye yetersizse siparis engellenir.
+  * Durumlar: Standart set belirlendi: PENDING, PREPARING, SHIPPED, DELIVERED, CANCELLED.
+
+2.4. VERI GECISI (ETL)
+- Talep: "Excelde eksik kolonlar var, isimler bozuk, telefonlar formatsiz."
+- Analiz ve Cozum:
+  * Guvenli Yukleme: Dosyalar once veritabanina (BYTEA) kaydedilir.
+  * Temizlik: Isimlerin basindaki/sonundaki bosluklar temizlenir (trim). Ismi olmayanlara "Bilinmeyen Musteri" atanir.
+  * Formatlama: Telefonlar Regex ile +90 formatina cevrilir. Formatlanamayanlar loglanir.
+
+2.5. TEST VE KALITE
+- Talep: "Hatasiz calissin ama cok test yazmayin." / "Yavaslik olmasin." / "Loglar kalabalik olmasin."
+- Analiz ve Cozum:
+  * Test Stratejisi: Kritik islevler (Stok, Para) icin Unit ve Entegrasyon testleri (%60+ coverage) yazildi.
+  * Performans: Sik aranan alanlara (Telefon, Email, SKU) veritabani indeksleri atildi.
+  * Loglama: Winston ile JSON loglama yapildi. Her istege bir `TraceID` atanarak karmasa onlendi.
+
+2.6. KONFIGURASYON
+- Talep: "Ortam farklari var." / "Sifreler kodda olmasin." / "Baglantilar kolay degissin."
+- Analiz ve Cozum:
+  * Environment: `.env` dosyalari ile Dev/Test/Prod ortamlari ayrildi.
+  * Guvenlik: DB sifreleri koddan cikarildi.
+  * Merkezi Yapı: Tum ayarlar `src/config` klasorunde toplandi.
+
+2.7. MIGRATION (VERITABANI GECISI)
+- Talep: "Mevcut veri bozulmasin." / "Tablo isimleri ingilizce mi?" / "Siparis tablosu karisik."
+- Analiz ve Cozum:
+  * Versioning: Sequelize ile versiyonlu migration yapisi kuruldu (`01-create...`).
+  * Standart: Tablo ve kolon isimleri Ingilizce (snake_case) yapildi.
+  * Guvenlik: Migrationlar veri kaybi yaratmayacak sekilde (Non-destructive) tasarlandi.
+
+2.8. DOKUMANTASYON
+- Talep: "Kisa oz dokuman." / "Teknik ekip anlasin." / "API'lar acik olsun."
+- Analiz ve Cozum:
+  * Readme: Kurulum ve kullanim basitce anlatildi.
+  * Teknik: `Codebase_Map.md` ve `Migration_Report.md` ile mimari belgelendi.
+  * API: Swagger (OpenAPI) ile tum uc noktalar interaktif hale getirildi.
+
+2.9. YARIM KALMIS PROJE DURUMU
+- Talep: "Eski yazilimci ne yapti bilmiyorum." / "Dosyalar eski/yeni karisik." / "Testler bozuk."
+- Analiz ve Cozum:
+  * Refactoring: Kod tabani elden gecirildi, gereksiz dosyalar silindi, klasor yapisi (`src/`) duzenlendi.
+  * Onarim: Eksik Controller ve Servisler (Ozellikle Order ve Product) bastan yazildi/tamamlandi.
+  * Test Onarimi: Calismayan testler duzeltildi ve CI pipeline'ina eklendi.
+
+3. TEKNIK OZET
+Proje, Node.js ve PostgreSQL uzerinde calismaktadir. CI/CD surecleriyle (GitHub Actions) kalite kontrolu saglanmis, Docker ile tasinabilirlik artirilmis ve Swagger ile dokumante edilmistir.

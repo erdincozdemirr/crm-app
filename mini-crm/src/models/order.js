@@ -1,29 +1,50 @@
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  const Order = sequelize.define('Order', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  class Order extends Model {
+    static associate(models) {
+      Order.belongsTo(models.Customer, {
+        foreignKey: 'customerId',
+        as: 'customer'
+      });
+      Order.hasMany(models.OrderItem, {
+        foreignKey: 'orderId',
+        as: 'items'
+      });
+    }
+  }
+
+  Order.init(
+    {
+      customerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'customer_id'
+      },
+      status: {
+        type: DataTypes.ENUM('PENDING', 'PREPARING', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
+        defaultValue: 'PENDING',
+        allowNull: false
+      },
+      totalPrice: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0.00,
+        field: 'total_price'
+      },
+      shippingAddress: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        field: 'shipping_address'
+      }
     },
-    customerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-      // TODO: foreign key constraint migration tarafında eksik gibi
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'pending' // müşteri 'hazırlanıyor' demişti, sync değil
-    },
-    totalAmount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true // nullable bırakılmış
-    },
-    // TODO: sipariş kalemleri için ayrı tablo düşünülmüş ama yapılmamış
-  }, {
-    tableName: 'orders',
-    underscored: true
-  });
+    {
+      sequelize,
+      modelName: 'Order',
+      tableName: 'orders',
+      underscored: true
+    }
+  );
 
   return Order;
 };

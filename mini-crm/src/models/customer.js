@@ -1,41 +1,53 @@
-// Not: Migration dosyasıyla birebir aynı değil, bilinçli tutarsızlık var.
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  const Customer = sequelize.define('Customer', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    firstName: {
-      type: DataTypes.STRING,
-      allowNull: false // ama ETL verisinde boş gelebiliyor
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true // TODO: zorunlu mu olmalı kararlaştırılacak
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      // TODO: uygun validator eklenmemiş
-    },
-    address: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    // Migration'da yok:
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
+  class Customer extends Model {
+    static associate(models) {
+      Customer.hasMany(models.Order, {
+        foreignKey: 'customerId',
+        as: 'orders'
+      });
     }
-  }, {
-    tableName: 'customers',
-    underscored: true
-  });
+  }
+
+  Customer.init(
+    {
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        field: 'first_name'
+      },
+      lastName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: 'last_name'
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
+      },
+      address: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
+      notes: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      }
+    },
+    {
+      sequelize,
+      modelName: 'Customer',
+      tableName: 'customers',
+      underscored: true
+    }
+  );
 
   return Customer;
 };

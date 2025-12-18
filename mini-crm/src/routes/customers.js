@@ -1,33 +1,11 @@
 const express = require('express');
+
 const router = express.Router();
-const customerService = require('../services/customerService');
-const logger = require('../lib/logger');
+const customerController = require('../controllers/customerController');
 
-// GET /api/customers
-router.get('/', async (req, res, next) => {
-  try {
-    const customers = await customerService.listCustomers();
-    res.json(customers);
-  } catch (err) {
-    logger.error('Error listing customers', { err });
-    next(err);
-  }
-});
-
-// POST /api/customers
-router.post('/', async (req, res, next) => {
-  try {
-    // TODO: request body validation eksik
-    const customer = await customerService.createCustomer(req.body);
-    res.status(201).json(customer);
-  } catch (err) {
-    logger.error('Error creating customer', { err });
-    next(err);
-  }
-});
-
-// TODO: GET /api/customers/:id
-// TODO: PUT /api/customers/:id
-// TODO: DELETE /api/customers/:id
+router.post('/', customerController.create);
+router.get('/', customerController.getAll);
+router.get('/:id', customerController.getById);
+router.put('/:id', customerController.update);
 
 module.exports = router;

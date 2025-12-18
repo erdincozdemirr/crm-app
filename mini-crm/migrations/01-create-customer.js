@@ -1,16 +1,13 @@
 'use strict';
 
-/**
- * Not: Model ile birebir uyumlu değil (isActive alanı yok).
- */
-
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('customers', {
       id: {
-        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        autoIncrement: true
+        type: Sequelize.INTEGER
       },
       first_name: {
         type: Sequelize.STRING,
@@ -22,28 +19,39 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
+        unique: true
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
+        unique: true
       },
       address: {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      notes: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
       created_at: {
+        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updated_at: {
+        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
+
+    await queryInterface.addIndex('customers', ['phone']);
+    await queryInterface.addIndex('customers', ['email']);
   },
 
-  async down(queryInterface) {
+  down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('customers');
   }
 };

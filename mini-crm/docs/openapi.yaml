@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  title: MiniCRM API
+  version: 1.0.0
+  description: CRM management API for customers, products, and orders.
+servers:
+  - url: http://localhost:3000/api
+tags:
+  - name: Customers
+    description: Customer management endpoints
+  - name: Products
+    description: Product inventory management
+  - name: Orders
+    description: Order processing endpoints
+  - name: ETL
+    description: Data import operations
+paths:
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: List all customers
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Get customer by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+    put:
+      tags:
+        - Customers
+      summary: Update customer
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Updated
+
+  /products:
+    get:
+      tags:
+        - Products
+      summary: List all products
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                sku:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                stockQuantity:
+                  type: integer
+                isStockTracked:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Created
+  /products/{id}/stock:
+    put:
+      tags:
+        - Products
+      summary: Update product stock
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Updated
+
+  /orders:
+    post:
+      tags:
+        - Orders
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: integer
+                shippingAddress:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: integer
+                      quantity:
+                        type: integer
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request (Insufficient Stock)
+  /orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order details by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Order not found
+  /orders/{id}/status:
+    patch:
+      tags:
+        - Orders
+      summary: Update order status
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, PREPARING, SHIPPED, DELIVERED, CANCELLED]
+      responses:
+        '200':
+          description: Updated
+          
+  /etl/import:
+    post:
+      tags:
+        - ETL
+      summary: Upload CSV file for data import
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Import started/completed

@@ -1,0 +1,128 @@
+PROJE MIMARI TASARIM DOKUMANI
+Proje: MiniCRM
+Tarih: 18 Aralik 2025
+
+1. GENEL MIMARI
+MiniCRM, Katmanli Mimari (Layered Architecture) prensibiyle tasarlanmistir. Bu yapi; veri erisimi, is mantigi ve sunum (API) katmanlarini birbirinden ayirarak kodun okunabilirligini, test edilebilirligini ve bakimini kolaylastirir.
+
+MODULLER VE SERVISLER
+Sistem asagidaki temel bilesenlerden olusur:
+
+1. Controller Katmani (src/controllers): HTTP isteklerini karsilar, parametreleri dogrular ve uygun servise yonlendirir.
+2. Service Katmani (src/services): Is mantigini (Business Logic) barindirir.
+   - CustomerService: Musteri tekillestirme, arama ve CRUD islemleri.
+   - ProductService: Urun yonetimi ve stok kontrolu.
+   - OrderService: Siparis surecleri, fiyatlandirma ve Transaction yonetimi.
+   - EtlService: Toplu veri aktarimi ve temizleme islemleri.
+3. Model Katmani (src/models): Veritabani tablolarinin nesne tabanli (ORM) karsiliklaridir (Sequelize).
+4. Utility Katmani: Logger (TraceID), Error Handler, Validation gibi ortak araclar.
+
+2. VERITABANI SEMASI
+Veritabani olarak PostgreSQL kullanilmistir. Sema, sequelize-cli migrationlari ile versiyonlanarak yonetilir.
+
+TABLO ILISKILERI
+- customers (1) ---- (N) orders
+- orders (1) ---- (N) order_items
+- products (1) ---- (N) order_items
+
+TABLO DETAYLARI
+1. customers: Musteri ana verisi.
+   - phone: Unique Index (Tekillestirme anahtari).
+   - email: Unique Index.
+   - firstName (Zorunlu), lastName (Opsiyonel).
+2. products: Urun ve envanter.
+   - sku: Stok Kodu (Unique).
+   - stock_quantity: Mevcut stok.
+   - is_stock_tracked: Stok takibi var/yok (Boolean).
+3. orders: Siparis baslik bilgileri.
+   - status: Durum (PENDING, SHIPPED, etc.).
+   - total_price: Siparis toplam tutari.
+   - shippingAddress: Teslimat adresi (Zorunlu).
+4. order_items: Siparis detaylari.
+   - unit_price: Satis anindaki kilitlenmis fiyat.
+   - quantity: Adet.
+5. etl_imports: Yuklenen dosyalarin tarihcesi.
+   - file_content: Dosya icerigi (BYTEA).
+
+3. UML DIYAGRAMLARI
+
+3.1. USE CASE DIYAGRAMI
+Yonetici ve Kullanicilarin sistemdeki yetenekleri.
+
+Admin -> Musteri Yonetimi (Ekle/Ara)
+Admin -> Stok Takibi
+Admin -> Siparis Olustur
+Admin -> Toplu Veri Yukle (ETL)
+
+3.2. CLASS DIAGRAM (SINIF DIYAGRAMI)
+Veri modelleri ve metodlar.
+
+Class: Customer
+- phone: String
+- firstName: String
+- createOrUpdate()
+
+Class: Product
+- sku: String
+- stockQuantity: Integer
+- isStockTracked: Boolean
+- checkStock()
+
+Class: Order
+- status: Enum
+- totalPrice: Decimal
+- createOrder()
+
+Iliskiler:
+Customer "1" -- "N" Order
+Order "1" *-- "N" OrderItems
+
+3.3. SEQUENCE DIAGRAM (SIPARIS AKISI)
+API'den Veritabanina veri akisi.
+
+Client -> API: POST /orders
+API -> OrderService: createOrder()
+OrderService -> DB: Transaction Start
+Loop: Check Items
+    OrderService -> DB: Check & Decrease Stock
+OrderService -> DB: Insert Order & Items
+OrderService -> DB: Transaction Commit
+OrderService -> Client: 201 Created
+
+4. API UCLARI LISTESI
+
+MUSTERILER (Customers)
+- GET /api/customers - Musterileri Listele (Arama: ?search=...)
+- POST /api/customers - Yeni Musteri Ekle
+- GET /api/customers/:id - Musteri Detayi Getir
+- PUT /api/customers/:id - Musteri Guncelle
+
+URUNLER (Products)
+- GET /api/products - Urunleri Listele
+- POST /api/products - Yeni Urun Ekle
+- PUT /api/products/:id/stock - Stok Guncelle
+
+SIPARISLER (Orders)
+- POST /api/orders - Siparis Olustur
+- GET /api/orders/:id - Sipariş Detayı Getir
+- PATCH /api/orders/:id/status - Siparis Durumu Guncelle
+
+VERI AKTARIMI (ETL)
+- POST /api/etl/import - Excel/CSV Yukle
+
+5. TEKNIK YAPILAR
+
+5.1. KONFIGURASYON VE GUVENLIK
+- Env Degiskenleri: Tum hassas bilgiler (DB Sifresi, Port) .env dosyasinda saklanir.
+- Config Modulu: src/config/index.js uzerinden tum ayarlar merkezi yonetilir. Development, Test ve Production ortamlari birbirinden izole edilmistir.
+
+5.2. LOGLAMA SISTEMI
+- Kutuphane: winston
+- Format: JSON yapisinda loglama yapilir.
+- Trace ID: AsyncLocalStorage kullanilarak her HTTP istegine benzersiz bir UUID atanir. Bu ID, istegin API'den veritabanina kadar olan tum loglarinda yer alir.
+- Cikti: Hem konsola hem de logs/ klasorune yazilir.
+
+5.3. MIGRATION YAPISI
+- Arac: sequelize-cli
+- Strateji (Versiyonlama): Her veritabani degisikligi zaman damgasiyla (YYYYMMDDHHMMSS-create-xyz.js) saklanir.
+- Guvenlik: Migrationlar, veri kaybini onleyecek sekilde (Non-destructive) yazilir. down metodlari ile geri alma senaryolari desteklenir.

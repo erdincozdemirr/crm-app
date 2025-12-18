@@ -1,22 +1,54 @@
-const { Customer } = require('../models');
-const logger = require('../lib/logger');
+const { Customer, Sequelize } = require('../models');
+const BaseService = require('./baseService');
 
-async function listCustomers() {
-  return Customer.findAll({
-    limit: 50 // TODO: pagination eksik
-  });
+class CustomerService extends BaseService {
+  constructor() {
+    super(Customer);
+  }
+
+  async findByPhoneOrEmail(phone, email) {
+    const { Op } = Sequelize;
+    const where = {};
+    const conditions = [];
+
+    if (phone) conditions.push({ phone });
+    if (email) conditions.push({ email });
+
+    if (conditions.length === 0) return null;
+
+    where[Op.or] = conditions;
+    return this.model.findOne({ where });
+  }
+
+  async findAll(query) {
+    const { Op } = Sequelize;
+    const { search } = query;
+    const where = {};
+
+    if (search) {
+      where[Op.or] = [
+        // Case-insensitive search for firstName and lastName
+        { firstName: { [Op.iLike]: `%${search}%` } },
+        { lastName: { [Op.iLike]: `%${search}%` } },
+        // Exact or partial match for phone
+        { phone: { [Op.iLike]: `%${search}%` } },
+        // Exact or partial match for email
+        { email: { [Op.iLike]: `%${search}%` } }
+      ];
+    }
+
+    return this.model.findAll({ where });
+  }
+
+  async createOrUpdate(data) {
+    const existing = await this.findByPhoneOrEmail(data.phone, data.email);
+
+    if (existing) {
+      return existing.update(data);
+    }
+
+    return this.create(data);
+  }
 }
 
-async function createCustomer(payload) {
-  // TODO: veri normalizasyonu yok (telefon formatı, email vs.)
-  logger.info('Creating customer', { payload }); // fazla veri logluyor
-  const customer = await Customer.create(payload);
-  return customer;
-}
-
-// TODO: update & delete hiç yazılmamış
-
-module.exports = {
-  listCustomers,
-  createCustomer
-};
+module.exports = new CustomerService();

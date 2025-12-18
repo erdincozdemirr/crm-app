@@ -7,7 +7,7 @@ async function start() {
   try {
     await sequelize.authenticate();
     logger.info('DB connection OK');
-    // await sequelize.sync(); // TODO: migrate mi sync mi kullanılacağı net değil
+
 
     app.listen(config.app.port, () => {
       logger.info(`Server listening on port ${config.app.port}`);
