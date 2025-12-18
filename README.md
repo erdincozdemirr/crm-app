@@ -42,8 +42,6 @@ Bu panel üzerinden:
 1.  **Mini CRM:** Kullanıcı Kılavuzuna ve Hızlı Başlangıça ulaşabilirsiniz.
 2.  **Proje Raporları:** Gereksinim Analizi, Mimari Tasarım ve süreç raporlarını inceleyebilirsiniz.
 3.  **Test Kapsamı:** Kodun ne kadarının test edildiğini (LCOV Raporu) görebilirsiniz.
-4.  **API Dokümantasyonu:** Swagger UI üzerinden API uçlarını test edebilirsiniz.
-5.  **Adım Adım İşlemler:** Sınav/Sunum için hazırlanan detaylı geliştirme günlüğüne bakabilirsiniz.
 
 ---
 
@@ -68,9 +66,6 @@ npm test
 # Test coverage raporunu üret
 npm run test:coverage
 ```
-
-## 🤝 Katkıda Bulunma
-Lütfen `docs/CONTRIBUTING.md` dosyasını inceleyiniz.
 
 ## 👨‍💻 Geliştirici
 **Erdinç Özdemir**
