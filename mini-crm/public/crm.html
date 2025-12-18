@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniCRM - Uygulama</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>MiniCRM</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="products">
+                    <i class="fa-solid fa-box"></i> Ürünler & Market
+                </a>
+                <a href="#" class="nav-item" data-page="customers">
+                    <i class="fa-solid fa-users"></i> Müşteriler
+                </a>
+                <a href="#" class="nav-item" data-page="orders">
+                    <i class="fa-solid fa-cart-shopping"></i> Siparişler
+                </a>
+                <a href="#" class="nav-item" data-page="etl">
+                    <i class="fa-solid fa-cloud-upload-alt"></i> Veri Aktarımı (ETL)
+                </a>
+                <a href="index.html" class="nav-item return-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard'a Dön
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Erdinç Özdemir</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 id="page-title">Ürün Pazarı</h2>
+                <div class="user-info">
+                    <div id="cart-btn" class="cart-icon">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span id="cart-count">0</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="app-view">
+                <!-- Dynamic Content Will Be Loaded Here -->
+
+                <!-- Product View Template -->
+                <div id="products-view" class="view-section">
+                    <div class="product-grid" id="product-list">
+                        <!-- Products will be injected here -->
+                        <div class="loading">Ürünler yükleniyor...</div>
+                    </div>
+                </div>
+
+                <!-- Other views (Customers, Orders, ETL) placeholders -->
+                <div id="customers-view" class="view-section" style="display: none;">
+                    <h3>Müşteri Listesi</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad Soyad</th>
+                                    <th>Telefon</th>
+                                    <th>Email</th>
+                                    <th>Bakiye/Not</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="orders-view" class="view-section" style="display: none;">
+                    <h3>Son Siparişler</h3>
+                    <div id="order-list">Yükleniyor...</div>
+                </div>
+
+                <div id="etl-view" class="view-section" style="display: none;">
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <h3>Toplu Veri Yükleme (ETL)</h3>
+                        <p>Excel veya CSV dosyanızı yükleyerek Müşteri veya Ürün verilerini sisteme aktarın.</p>
+                        <form id="etl-form" style="margin-top: 1rem;">
+                            <input type="file" id="etl-file" accept=".csv,.xlsx" required
+                                style="margin-bottom: 1rem; width: 100%;">
+                            <button type="submit" class="btn">Yüklemeyi Başlat</button>
+                        </form>
+                        <div id="etl-status" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Cart Modal -->
+        <div id="cart-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Sepetim</h3>
+                <div id="cart-items">
+                    <p>Sepetiniz boş.</p>
+                </div>
+                <div class="cart-footer">
+                    <div class="total-price">Toplam: <span id="cart-total">0.00</span> TL</div>
+
+                    <div class="form-group">
+                        <label for="order-customer">Müşteri Seçin:</label>
+                        <select id="order-customer" class="form-control">
+                            <option value="">Yükleniyor...</option>
+                        </select>
+                    </div>
+
+                    <button id="checkout-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sipariş
+                        Ver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">İşlem Başarılı</div>
+    </div>
+
+    <script src="js/crm.js"></script>
+</body>
+
+</html>

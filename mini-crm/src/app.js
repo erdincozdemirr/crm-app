@@ -71,6 +71,13 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
+// Serve Static Files for Frontend
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../public'))); // Dashboard
+app.use('/docs', express.static(path.join(__dirname, '../docs'))); // Documentation
+app.use('/test-reports', express.static(path.join(__dirname, '../tests/reports'))); // Test/Log Reports
+
+// 404 Handler (Keep this at the end)
 app.use((req, res, next) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });

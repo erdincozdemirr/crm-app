@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniCRM - Raporlar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;family=Fira+Code&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">MiniCRM</div>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="reports.html" class="active">Raporlar & Dokümanlar</a>
+            </nav>
+        </header>
+
+        <main style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
+            <!-- Sidebar list of files -->
+            <aside>
+                <h3 style="margin-bottom: 1rem; color: var(--accent);">📄 Mevcut Dosyalar</h3>
+                <ul class="file-list" style="list-style: none;">
+                    <li onclick="loadDoc('Yapilan_Islemler_Adim_Adim.txt')">
+                        <span>Adım Adım İşlemler</span>
+                        <span class="status-badge">ÖNEMLİ</span>
+                    </li>
+                    <li onclick="loadDoc('README.md')">
+                        <span>Proje Hakkında (Readme)</span>
+                    </li>
+                    <li onclick="loadDoc('Gereksinim_Analizi.txt')">Gereksinim Analizi</li>
+                    <li onclick="loadDoc('User_Manual.md')">Kullanıcı Kılavuzu</li>
+                    <li onclick="loadDoc('Migration_Report.md')">Migration Raporu</li>
+                    <li onclick="loadDoc('ETL_Result_Report.md')">ETL Sonuçları</li>
+                    <li onclick="loadDoc('Log_Samples.md')">Log Örnekleri</li>
+                    <li onclick="loadDoc('Codebase_Map.md')">Kod Haritası</li>
+                </ul>
+
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #334155;">
+                    <h4 style="margin-bottom: 0.5rem;">🔗 Dış Bağlantılar</h4>
+                    <a href="/test-reports/lcov-report/index.html" target="_blank" class="btn"
+                        style="width: 100%; text-align: center; margin-bottom: 0.5rem;">Test Coverage Raporu</a>
+                    <a href="/api-docs" target="_blank" class="btn"
+                        style="width: 100%; text-align: center; margin-bottom: 0.5rem; background-color: transparent; border: 1px solid var(--accent);">API
+                        Dokümantasyonu</a>
+                </div>
+            </aside>
+
+            <!-- Viewer -->
+            <section>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 id="doc-title">Doküman Önizleme</h2>
+                    <a id="download-link" href="#" target="_blank" style="color: var(--accent); font-size: 0.9rem;">Yeni
+                        Sekmede Aç ↗</a>
+                </div>
+
+                <div id="content-area" class="doc-viewer markdown-body">
+                    Soldaki menüden görüntülemek istediğiniz raporu seçin.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        async function loadDoc(filename) {
+            const titleEl = document.getElementById('doc-title');
+            const contentEl = document.getElementById('content-area');
+            const linkEl = document.getElementById('download-link');
+
+            titleEl.textContent = 'Yükleniyor...';
+            contentEl.innerHTML = '<span style="color: var(--text-secondary)">Veri çekiliyor...</span>';
+
+            try {
+                const response = await fetch(`/docs/${filename}`);
+                if (!response.ok) throw new Error('Dosya bulunamadı');
+
+                const text = await response.text();
+
+                titleEl.textContent = filename;
+
+                // Render Markdown if file is .md or .txt implies markdown structure
+                if (filename.endsWith('.md') || filename.endsWith('.txt')) {
+                    contentEl.innerHTML = marked.parse(text);
+                } else {
+                    contentEl.textContent = text;
+                }
+
+                linkEl.href = `/docs/${filename}`;
+
+            } catch (error) {
+                contentEl.innerHTML = '<span style="color: #ef4444">Hata: Doküman yüklenemedi. ' + error.message + '</span>';
+            }
+        }
+
+        // Auto load from query param
+        const urlParams = new URLSearchParams(window.location.search);
+        const doc = urlParams.get('doc');
+        if (doc) {
+            loadDoc(doc);
+        } else {
+            // Default load the most important ones
+            loadDoc('Yapilan_Islemler_Adim_Adim.txt');
+        }
+    </script>
+</body>
+
+</html>
