@@ -15,7 +15,7 @@ module.exports = {
         try {
             csvData = fs.readFileSync(csvPath, 'utf8');
         } catch (error) {
-            console.warn("⚠️ mock_customers.csv not found, skipping customer CSV seed.");
+            console.warn("mock_customers.csv not found, skipping customer CSV seed.");
         }
 
         const customersToInsert = [];
@@ -86,7 +86,7 @@ module.exports = {
         // Assign explicit IDs
         customersToInsert.forEach((c, index) => { c.id = index + 1; });
 
-        console.log(`🌱 Seeding ${customersToInsert.length} customers...`);
+        console.log(`Seeding ${customersToInsert.length} customers...`);
         await queryInterface.bulkInsert('customers', customersToInsert, { ignoreDuplicates: true });
 
         // Update sequence
@@ -115,7 +115,7 @@ module.exports = {
             });
         }
 
-        console.log(`🌱 Seeding ${productsToInsert.length} products...`);
+        console.log(`Seeding ${productsToInsert.length} products...`);
         await queryInterface.bulkInsert('products', productsToInsert, { ignoreDuplicates: true });
         await queryInterface.sequelize.query(`SELECT setval('products_id_seq', ${productsToInsert.length + 10}, false);`);
 
@@ -133,7 +133,7 @@ module.exports = {
         const validCustomerIds = existingCustomers.map(c => c.id);
 
         if (validCustomerIds.length === 0) {
-            console.error("❌ No customers found! Skipping order generation.");
+            console.error("No customers found! Skipping order generation.");
             return;
         }
 
@@ -190,7 +190,7 @@ module.exports = {
             orderIdCounter++;
         }
 
-        console.log(`🌱 Seeding ${ordersToInsert.length} orders and ${orderItemsToInsert.length} items...`);
+        console.log(`Seeding ${ordersToInsert.length} orders and ${orderItemsToInsert.length} items...`);
         await queryInterface.bulkInsert('orders', ordersToInsert, { ignoreDuplicates: true });
         await queryInterface.sequelize.query(`SELECT setval('orders_id_seq', ${ordersToInsert.length + 10}, false);`);
 
