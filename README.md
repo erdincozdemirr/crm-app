@@ -49,6 +49,12 @@ Sistem, bulunduğunuz **Git Branch**'ine göre otomatik olarak ortamı ayarlar:
     *   Hangi Branch: `main` veya `test`
     *   Veritabanı: `mini_crm_test` (Port 5432)
     *   *Normal kullanım ve inceleme için bu modda kalmanız önerilir.*
+    *   *Test moduna geçmek için:*
+        ```bash
+        git checkout test
+        npm run db:start
+        npm run dev
+        ```
 
 *   **🚀 Production Ortamı:**
     *   Hangi Branch: `prod`
@@ -56,7 +62,7 @@ Sistem, bulunduğunuz **Git Branch**'ine göre otomatik olarak ortamı ayarlar:
     *   *Prod moduna geçmek için:*
         ```bash
         git checkout prod
-        npm run db:start  # Prod veritabanını başlatır
+        npm run db:start
         npm run dev
         ```
 
