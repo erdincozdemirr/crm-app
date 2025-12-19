@@ -20,6 +20,15 @@ class OrderController {
         }
     }
 
+    async getAllOrders(req, res) {
+        try {
+            const orders = await orderService.findAll();
+            res.json(orders);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     async getById(req, res) {
         try {
             const order = await orderService.findById(req.params.id);

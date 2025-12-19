@@ -155,6 +155,13 @@ paths:
           description: Updated
 
   /orders:
+    get:
+      tags:
+        - Orders
+      summary: List all orders
+      responses:
+        '200':
+          description: OK
     post:
       tags:
         - Orders

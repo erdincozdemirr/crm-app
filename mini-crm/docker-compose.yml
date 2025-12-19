@@ -3,7 +3,8 @@ version: '3.8'
 services:
   db:
     image: postgres:14-alpine
-    container_name: mini_crm_db
+    container_name: mini_crm_test
+    profiles: [ "default", "test" ]
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -11,8 +12,23 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg_data_test:/var/lib/postgresql/data
+    restart: always
+
+  prod_db:
+    image: postgres:14-alpine
+    container_name: mini_crm_prod
+    profiles: [ "prod" ]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mini_crm_prod
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data_prod:/var/lib/postgresql/data
     restart: always
 
 volumes:
-  postgres_data:
+  pg_data_test:
+  pg_data_prod:

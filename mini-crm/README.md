@@ -1,8 +1,8 @@
-# MiniCRM Projesi 🚀
+# MiniCRM Projesi
 
 MiniCRM, müşteri ilişkilerini yönetmek, ürün ve stok takibi yapmak ve sipariş süreçlerini dijitalleştirmek için geliştirilmiş Node.js tabanlı, modern arayüzlü ve kapsamlı bir CRM sistemidir.
 
-## 🌟 Özellikler
+## Özellikler
 
 *   **Müşteri Yönetimi:** Müşteri ekleme, listeleme ve güncelleme. (Telefon/Email tekilleştirme destekli)
 *   **Ürün & Stok:** Stok takibi olan ve olmayan ürün yönetimi.
@@ -14,7 +14,7 @@ MiniCRM, müşteri ilişkilerini yönetmek, ürün ve stok takibi yapmak ve sipa
 
 ---
 
-## 🚀 Hızlı Kurulum
+## Hızlı Kurulum
 
 ### Seçenek 1: Docker ile (Önerilen)
 Tek komutla veritabanı ve uygulamayı ayağa kaldırın.
@@ -34,7 +34,7 @@ Node.js (v18+) ve PostgreSQL gerektirir.
 
 ---
 
-## 🖥️ Kullanım (Dashboard)
+## Kullanım (Dashboard)
 
 Tarayıcınızı açıp **http://localhost:3000** adresine gidin. Karşınıza **Proje Yönetim Paneli** çıkacaktır.
 
@@ -47,7 +47,7 @@ Bu panel üzerinden:
 
 ---
 
-## 📚 Dokümantasyon
+## Dokümantasyon
 
 Tüm teknik dokümanlar `docs/` klasöründe ve Web Arayüzü içindedir:
 
@@ -57,7 +57,7 @@ Tüm teknik dokümanlar `docs/` klasöründe ve Web Arayüzü içindedir:
 - **[Mimari Tasarım](docs/Mimari_Tasarim_Dokumani.txt)**
 - **[Log Örnekleri](docs/Log_Samples.md)**
 
-## 🧪 Testler
+## Testler
 
 Testleri manuel çalıştırmak için:
 
@@ -69,9 +69,8 @@ npm test
 npm run test:coverage
 ```
 
-## 🤝 Katkıda Bulunma
+## Katkıda Bulunma
 Lütfen `docs/CONTRIBUTING.md` dosyasını inceleyiniz.
 
-## 👨‍💻 Geliştirici
+## Geliştirici
 **Erdinç Özdemir**
-

@@ -11,7 +11,8 @@
     "migrate": "sequelize db:migrate",
     "lint": "eslint src --ext .js",
     "lint:fix": "eslint src --ext .js --fix",
-    "format": "prettier --write \"src/**/*.{js,json}\""
+    "format": "prettier --write \"src/**/*.{js,json}\"",
+    "db:start": "./scripts/db-start.sh"
   },
   "dependencies": {
     "csv-parse": "^6.1.0",
